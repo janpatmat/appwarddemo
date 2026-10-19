@@ -1,7 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:url_launcher/url_launcher.dart';
 
 import 'calculator_engine.dart';
+
+final _googleUrl = Uri.parse('https://www.google.com');
 
 class CalculatorScreen extends StatefulWidget {
   const CalculatorScreen({super.key});
@@ -14,6 +17,26 @@ class _CalculatorScreenState extends State<CalculatorScreen> {
   final _engine = CalculatorEngine();
 
   void _press(VoidCallback action) => setState(action);
+
+  /// Opens Google in the default browser, or in a new tab on web, so the
+  /// calculation in progress is kept.
+  Future<void> _openGoogle() async {
+    bool opened;
+    try {
+      opened = await launchUrl(
+        _googleUrl,
+        mode: .externalApplication,
+        webOnlyWindowName: '_blank',
+      );
+    } on PlatformException {
+      // Android reports a missing browser this way instead of returning false.
+      opened = false;
+    }
+    if (!opened && mounted) {
+      ScaffoldMessenger.of(context)
+          .showSnackBar(const SnackBar(content: Text("Couldn't open Google")));
+    }
+  }
 
   Map<ShortcutActivator, VoidCallback> get _keyboardShortcuts => {
     for (var i = 0; i <= 9; i++)
@@ -57,6 +80,14 @@ class _CalculatorScreenState extends State<CalculatorScreen> {
                   child: Column(
                     crossAxisAlignment: .stretch,
                     children: [
+                      Align(
+                        alignment: .centerRight,
+                        child: TextButton.icon(
+                          onPressed: _openGoogle,
+                          icon: const Icon(Icons.open_in_new),
+                          label: const Text('Google'),
+                        ),
+                      ),
                       Expanded(
                         flex: 2,
                         child: _Display(
