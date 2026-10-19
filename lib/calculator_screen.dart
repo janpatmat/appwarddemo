@@ -2,6 +2,14 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 
 import 'calculator_engine.dart';
+import 'fahh_sound.dart';
+
+class CalculatorScreen extends StatefulWidget {
+  const CalculatorScreen({super.key, this.fahhSound});
+
+  /// The sound the FAHH button plays. The screen creates and disposes its own
+  /// when this is null.
+  final FahhSound? fahhSound;
 import 'theme_controller.dart';
 
 class CalculatorScreen extends StatefulWidget {
@@ -15,6 +23,13 @@ class CalculatorScreen extends StatefulWidget {
 
 class _CalculatorScreenState extends State<CalculatorScreen> {
   final _engine = CalculatorEngine();
+  late final _fahhSound = widget.fahhSound ?? FahhSound();
+
+  @override
+  void dispose() {
+    if (widget.fahhSound == null) _fahhSound.dispose();
+    super.dispose();
+  }
 
   void _press(VoidCallback action) => setState(action);
 
@@ -61,8 +76,14 @@ class _CalculatorScreenState extends State<CalculatorScreen> {
                     crossAxisAlignment: .stretch,
                     children: [
                       Align(
-                        alignment: .centerRight,
-                        child: _ThemeToggle(controller: widget.themeController),
+                        alignment: .centerLeft,
+                        child: FilledButton.tonalIcon(
+                          // Deliberately not wrapped in _press: the sound
+                          // leaves the calculation alone.
+                          onPressed: _fahhSound.play,
+                          icon: const Icon(Icons.volume_up),
+                          label: const Text('FAHH'),
+                        ),
                       ),
                       Expanded(
                         flex: 2,

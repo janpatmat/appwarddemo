@@ -16,6 +16,18 @@ Then open http://localhost:8080.
 The Flutter version used for the build is set by `FLUTTER_VERSION` in the
 `Dockerfile`; override it with `--build-arg FLUTTER_VERSION=<version>`.
 
+## FAHH button
+
+The FAHH button plays `assets/sounds/fahh.mp3` using
+[`audioplayers`](https://pub.dev/packages/audioplayers). Only commit a clip
+that we're allowed to use and redistribute.
+
+Linux desktop builds need GStreamer, plus its "good" plugins to decode MP3:
+
+```sh
+sudo apt-get install libgstreamer1.0-dev libgstreamer-plugins-base1.0-dev gstreamer1.0-plugins-good
+```
+
 ## Getting Started
 
 This project is a starting point for a Flutter application.
