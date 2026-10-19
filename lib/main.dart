@@ -1,13 +1,18 @@
 import 'package:flutter/material.dart';
 
+import 'calculation_history.dart';
 import 'calculator_screen.dart';
 
-void main() {
-  runApp(const CalculatorApp());
+Future<void> main() async {
+  WidgetsFlutterBinding.ensureInitialized();
+  final history = await CalculationHistory.load();
+  runApp(CalculatorApp(history: history));
 }
 
 class CalculatorApp extends StatelessWidget {
-  const CalculatorApp({super.key});
+  const CalculatorApp({super.key, required this.history});
+
+  final CalculationHistory history;
 
   @override
   Widget build(BuildContext context) {
@@ -18,7 +23,7 @@ class CalculatorApp extends StatelessWidget {
       darkTheme: ThemeData(
         colorScheme: .fromSeed(seedColor: Colors.deepPurple, brightness: .dark),
       ),
-      home: const CalculatorScreen(),
+      home: CalculatorScreen(history: history),
     );
   }
 }
