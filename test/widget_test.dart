@@ -1,6 +1,9 @@
+import 'dart:math';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 
+import 'package:calculator/calculator_screen.dart';
 import 'package:calculator/main.dart';
 
 void main() {
@@ -25,5 +28,25 @@ void main() {
     await tester.pump();
 
     expect(find.text('4'), findsNWidgets(2));
+  });
+
+  testWidgets('random button puts a number in the display to calculate with', (
+    tester,
+  ) async {
+    final expected = 1 + Random(1).nextInt(100);
+    await tester.pumpWidget(
+      MaterialApp(home: CalculatorScreen(random: Random(1))),
+    );
+
+    await tester.tap(find.widgetWithText(FilledButton, 'Random'));
+    await tester.pump();
+    expect(find.text('$expected'), findsWidgets);
+
+    for (final key in ['+', '5', '=']) {
+      await tester.tap(find.widgetWithText(FilledButton, key));
+      await tester.pump();
+    }
+    expect(find.text('${expected + 5}'), findsOneWidget);
+    expect(find.text('$expected + 5 ='), findsOneWidget);
   });
 }
