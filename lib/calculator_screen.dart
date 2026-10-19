@@ -1,10 +1,19 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:url_launcher/url_launcher.dart';
 
 import 'calculator_engine.dart';
 
+final tatlongWifeUrl = Uri.parse('https://www.youtube.com/watch?v=p4kOVE-_ehI');
+
+// Opens outside the app: a new tab on web, the YouTube app (or browser) on mobile.
+Future<bool> _openExternally(Uri url) =>
+    launchUrl(url, mode: LaunchMode.externalApplication);
+
 class CalculatorScreen extends StatefulWidget {
-  const CalculatorScreen({super.key});
+  const CalculatorScreen({super.key, this.openUrl = _openExternally});
+
+  final Future<bool> Function(Uri url) openUrl;
 
   @override
   State<CalculatorScreen> createState() => _CalculatorScreenState();
@@ -65,6 +74,14 @@ class _CalculatorScreenState extends State<CalculatorScreen> {
                         ),
                       ),
                       Expanded(flex: 5, child: _buildKeypad()),
+                      Padding(
+                        padding: const EdgeInsets.all(6),
+                        child: FilledButton.tonalIcon(
+                          onPressed: () => widget.openUrl(tatlongWifeUrl),
+                          icon: const Icon(Icons.music_note),
+                          label: const Text('Tatlong Wife'),
+                        ),
+                      ),
                     ],
                   ),
                 ),

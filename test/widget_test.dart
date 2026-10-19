@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 
+import 'package:calculator/calculator_screen.dart';
 import 'package:calculator/main.dart';
 
 void main() {
@@ -25,5 +26,28 @@ void main() {
     await tester.pump();
 
     expect(find.text('4'), findsNWidgets(2));
+  });
+
+  testWidgets('Tatlong Wife button opens the video and keeps the calculation', (
+    tester,
+  ) async {
+    final opened = <Uri>[];
+    await tester.pumpWidget(
+      MaterialApp(
+        home: CalculatorScreen(
+          openUrl: (url) async {
+            opened.add(url);
+            return true;
+          },
+        ),
+      ),
+    );
+
+    await tester.tap(find.widgetWithText(FilledButton, '7'));
+    await tester.tap(find.text('Tatlong Wife'));
+    await tester.pump();
+
+    expect(opened, [Uri.parse('https://www.youtube.com/watch?v=p4kOVE-_ehI')]);
+    expect(find.text('7'), findsNWidgets(2));
   });
 }
