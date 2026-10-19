@@ -1,17 +1,22 @@
+import 'dart:math';
+
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 
 import 'calculator_engine.dart';
 
 class CalculatorScreen extends StatefulWidget {
-  const CalculatorScreen({super.key});
+  const CalculatorScreen({super.key, this.random});
+
+  /// The source for the random number button. Tests pass a seeded one.
+  final Random? random;
 
   @override
   State<CalculatorScreen> createState() => _CalculatorScreenState();
 }
 
 class _CalculatorScreenState extends State<CalculatorScreen> {
-  final _engine = CalculatorEngine();
+  late final _engine = CalculatorEngine(random: widget.random);
 
   void _press(VoidCallback action) => setState(action);
 
@@ -28,6 +33,7 @@ class _CalculatorScreenState extends State<CalculatorScreen> {
     const CharacterActivator('/'): () =>
         _press(() => _engine.setOperation(Operation.divide)),
     const CharacterActivator('%'): () => _press(_engine.percent),
+    const CharacterActivator('r'): () => _press(_engine.inputRandom),
     const CharacterActivator('='): () => _press(_engine.equals),
     const SingleActivator(LogicalKeyboardKey.enter): () =>
         _press(_engine.equals),
@@ -97,6 +103,7 @@ class _CalculatorScreenState extends State<CalculatorScreen> {
     );
 
     final rows = [
+      [function('Random', _engine.inputRandom)],
       [
         function('C', _engine.clear),
         _CalcButton(

@@ -1,3 +1,5 @@
+import 'dart:math';
+
 /// The four arithmetic operations the calculator supports.
 enum Operation {
   add('+'),
@@ -22,8 +24,17 @@ enum Operation {
 /// Operations are evaluated left to right as they are entered, like a pocket
 /// calculator, so `2 + 3 × 4 =` gives 20.
 class CalculatorEngine {
+  CalculatorEngine({Random? random}) : _random = random ?? Random();
+
   static const errorText = 'Error';
   static const _maxDigits = 15;
+
+  /// The range of numbers [inputRandom] picks from, inclusive.
+  // TODO(GIT-6): confirm the range with the product owner.
+  static const randomMin = 1;
+  static const randomMax = 100;
+
+  final Random _random;
 
   String _display = '0';
   String _expression = '';
@@ -67,6 +78,17 @@ class CalculatorEngine {
     } else if (!_display.contains('.')) {
       _display += '.';
     }
+    _operandEntered = true;
+  }
+
+  /// Puts a random whole number from [randomMin] to [randomMax] in the
+  /// display, to be used like a typed number.
+  void inputRandom() {
+    if (_hasError) clear();
+    final value = randomMin + _random.nextInt(randomMax - randomMin + 1);
+    _beginNumber('$value');
+    // The next digit replaces the random number instead of appending to it.
+    _startNewNumber = true;
     _operandEntered = true;
   }
 

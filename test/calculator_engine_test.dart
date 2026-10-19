@@ -1,3 +1,5 @@
+import 'dart:math';
+
 import 'package:flutter_test/flutter_test.dart';
 
 import 'package:calculator/calculator_engine.dart';
@@ -163,5 +165,51 @@ void main() {
   test('uses exponent notation for huge results', () {
     type('99999999*99999999=');
     expect(engine.display, '9.9999998e+15');
+  });
+
+  group('random number', () {
+    test('is a whole number from 1 to 100', () {
+      for (var i = 0; i < 500; i++) {
+        engine.inputRandom();
+        final value = int.parse(engine.display);
+        expect(value, inInclusiveRange(1, 100));
+      }
+    });
+
+    test('can be used in a calculation', () {
+      engine = CalculatorEngine(random: Random(1));
+      engine.inputRandom();
+      final value = int.parse(engine.display);
+      type('+5=');
+      expect(engine.display, '${value + 5}');
+      expect(engine.expression, '$value + 5 =');
+    });
+
+    test('can be the second operand', () {
+      engine = CalculatorEngine(random: Random(1));
+      type('10+');
+      engine.inputRandom();
+      final value = int.parse(engine.display);
+      type('=');
+      expect(engine.display, '${10 + value}');
+    });
+
+    test('is replaced by the next typed digit', () {
+      engine.inputRandom();
+      type('7');
+      expect(engine.display, '7');
+    });
+
+    test('clears an error', () {
+      type('5/0=');
+      engine.inputRandom();
+      expect(int.parse(engine.display), inInclusiveRange(1, 100));
+    });
+
+    test('starts a new calculation after a result', () {
+      type('2+2=');
+      engine.inputRandom();
+      expect(engine.expression, '');
+    });
   });
 }
