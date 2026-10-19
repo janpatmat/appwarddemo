@@ -3,11 +3,14 @@ import 'package:flutter/services.dart';
 import 'package:url_launcher/url_launcher.dart';
 
 import 'calculator_engine.dart';
+import 'theme_controller.dart';
 
 final _googleUrl = Uri.parse('https://www.google.com');
 
 class CalculatorScreen extends StatefulWidget {
-  const CalculatorScreen({super.key});
+  const CalculatorScreen({super.key, required this.themeController});
+
+  final ThemeController themeController;
 
   @override
   State<CalculatorScreen> createState() => _CalculatorScreenState();
@@ -172,6 +175,23 @@ class _CalculatorScreenState extends State<CalculatorScreen> {
             ),
           ),
       ],
+    );
+  }
+}
+
+class _ThemeToggle extends StatelessWidget {
+  const _ThemeToggle({required this.controller});
+
+  final ThemeController controller;
+
+  @override
+  Widget build(BuildContext context) {
+    final brightness = Theme.of(context).brightness;
+    final isDark = brightness == .dark;
+    return IconButton(
+      tooltip: isDark ? 'Switch to light mode' : 'Switch to dark mode',
+      icon: Icon(isDark ? Icons.light_mode_outlined : Icons.dark_mode_outlined),
+      onPressed: () => controller.toggle(brightness),
     );
   }
 }

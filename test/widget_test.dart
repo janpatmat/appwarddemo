@@ -3,8 +3,18 @@ import 'package:flutter/services.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:url_launcher_platform_interface/link.dart';
 import 'package:url_launcher_platform_interface/url_launcher_platform_interface.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 import 'package:calculator/main.dart';
+import 'package:calculator/theme_controller.dart';
+
+Future<void> pumpApp(WidgetTester tester) async {
+  final themeController = await ThemeController.load();
+  await tester.pumpWidget(CalculatorApp(themeController: themeController));
+}
+
+Brightness currentBrightness(WidgetTester tester) =>
+    Theme.of(tester.element(find.byType(Scaffold))).brightness;
 
 /// Records launches instead of opening a browser.
 class _FakeUrlLauncher extends UrlLauncherPlatform {
@@ -32,8 +42,10 @@ _FakeUrlLauncher _fakeUrlLauncher({bool Function()? onLaunch}) {
 }
 
 void main() {
+  setUp(() => SharedPreferences.setMockInitialValues({}));
+
   testWidgets('adds two numbers by tapping the keypad', (tester) async {
-    await tester.pumpWidget(const CalculatorApp());
+    await pumpApp(tester);
 
     for (final key in ['1', '2', '+', '3', '=']) {
       await tester.tap(find.widgetWithText(FilledButton, key));
@@ -45,7 +57,7 @@ void main() {
   });
 
   testWidgets('backspace button removes the last digit', (tester) async {
-    await tester.pumpWidget(const CalculatorApp());
+    await pumpApp(tester);
 
     await tester.tap(find.widgetWithText(FilledButton, '4'));
     await tester.tap(find.widgetWithText(FilledButton, '2'));
