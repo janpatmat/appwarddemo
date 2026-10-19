@@ -1,19 +1,30 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 
+import 'calculation_history.dart';
 import 'calculator_engine.dart';
+import 'history_screen.dart';
 
 class CalculatorScreen extends StatefulWidget {
-  const CalculatorScreen({super.key});
+  const CalculatorScreen({super.key, required this.history});
+
+  final CalculationHistory history;
 
   @override
   State<CalculatorScreen> createState() => _CalculatorScreenState();
 }
 
 class _CalculatorScreenState extends State<CalculatorScreen> {
-  final _engine = CalculatorEngine();
+  late final _engine = CalculatorEngine(onResult: widget.history.add);
 
   void _press(VoidCallback action) => setState(action);
+
+  void _openHistory() => Navigator.push(
+    context,
+    MaterialPageRoute<void>(
+      builder: (_) => HistoryScreen(history: widget.history),
+    ),
+  );
 
   Map<ShortcutActivator, VoidCallback> get _keyboardShortcuts => {
     for (var i = 0; i <= 9; i++)
@@ -57,6 +68,14 @@ class _CalculatorScreenState extends State<CalculatorScreen> {
                   child: Column(
                     crossAxisAlignment: .stretch,
                     children: [
+                      Align(
+                        alignment: .centerLeft,
+                        child: IconButton(
+                          icon: const Icon(Icons.history),
+                          tooltip: 'History',
+                          onPressed: _openHistory,
+                        ),
+                      ),
                       Expanded(
                         flex: 2,
                         child: _Display(

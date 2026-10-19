@@ -4,8 +4,12 @@ import 'package:calculator/calculator_engine.dart';
 
 void main() {
   late CalculatorEngine engine;
+  late List<String> results;
 
-  setUp(() => engine = CalculatorEngine());
+  setUp(() {
+    results = [];
+    engine = CalculatorEngine(onResult: results.add);
+  });
 
   /// Feeds [keys] to the engine, e.g. `'12+3='`.
   void type(String keys) {
@@ -158,6 +162,20 @@ void main() {
   test('limits input to 15 digits', () {
     type('1234567890123456789');
     expect(engine.display, '123456789012345');
+  });
+
+  test('reports each result with its full calculation', () {
+    type('12+3=');
+    type('2+3*4=');
+    expect(results, ['12 + 3 = 15', '5 × 4 = 20']);
+  });
+
+  test('does not report errors or unfinished calculations', () {
+    type('5/0=');
+    type('7+');
+    type('=');
+    type('C=');
+    expect(results, ['7 + 7 = 14']);
   });
 
   test('uses exponent notation for huge results', () {

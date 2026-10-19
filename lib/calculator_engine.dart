@@ -22,8 +22,14 @@ enum Operation {
 /// Operations are evaluated left to right as they are entered, like a pocket
 /// calculator, so `2 + 3 × 4 =` gives 20.
 class CalculatorEngine {
+  CalculatorEngine({this.onResult});
+
   static const errorText = 'Error';
   static const _maxDigits = 15;
+
+  /// Called with the full calculation, e.g. `12 + 3 = 15`, each time `=`
+  /// produces a result. Not called for errors.
+  final void Function(String calculation)? onResult;
 
   String _display = '0';
   String _expression = '';
@@ -91,6 +97,7 @@ class CalculatorEngine {
     final right = _value;
     if (!_calculate()) return;
     _expression = '${_format(left)} ${operation.symbol} ${_format(right)} =';
+    onResult?.call('$_expression $_display');
     _accumulator = null;
     _pending = null;
     _startNewNumber = true;
