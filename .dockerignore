@@ -1,0 +1,13 @@
+# VCS, IDE and local build output
+.git
+.idea
+*.iml
+.dart_tool
+build
+
+# Native platform folders aren't needed for the web build
+android
+ios
+linux
+macos
+windows
